@@ -4,10 +4,13 @@ from docx import Document
 import io
 
 # =========================================================================
-# CONFIGURAÇÕES DE SEGURANÇA E NEGÓCIO
+# CONFIGURAÇÕES DE SEGURANÇA, NEGÓCIO E API (SUAS CONFIGURAÇÕES PRIVADAS)
 # =========================================================================
 SENHA_CORRETA = "PROPOSTA2026"  # Senha que você enviará aos compradores
-LINK_MERCADO_PAGO = "https://mpago.la"  # Seu link gerado
+LINK_MERCADO_PAGO = "https://mpago.la/1ud7mBi"  # Seu link do Mercado Pago
+
+# Cole aqui a sua chave do Google AI Studio (Aquela que termina em ...6ftA)
+MINHA_API_KEY_PRIVADA = st.secrets["GEMINI_API_KEY"]
 # =========================================================================
 
 st.set_page_config(page_title="Gerador de Propostas IA", page_icon="💼", layout="centered")
@@ -62,10 +65,7 @@ else:
         st.session_state['autenticado'] = False
         st.rerun()
 
-    st.write("Insira seus dados para gerar propostas comerciais altamente persuasivas usando a API do Gemini.")
-
-    api_key_input = st.text_input("Insira sua API Key do Google AI Studio:", type="password", 
-                                 help="Cole aqui a sua chave privada do Google AI Studio.")
+    st.write("Insira os dados do seu cliente abaixo para gerar a proposta comercial perfeita.")
 
     with st.form("dados_proposta"):
         nome_cliente = st.text_input("Nome do Cliente / Empresa:", placeholder="Ex: Clínica OdontoSorriso")
@@ -92,14 +92,13 @@ else:
         return buffer
 
     if botao_gerar:
-        if not api_key_input:
-            st.error("⚠️ Por favor, insira sua API Key para prosseguir.")
-        elif not nome_cliente or not servico or not dores_cliente or not preco_estimado:
+        if not nome_cliente or not servico or not dores_cliente or not preco_estimado:
             st.error("⚠️ Por favor, preencha todos os campos do formulário.")
         else:
-            with st.spinner("O Gemini está estruturando sua proposta..."):
+            with st.spinner("Nossa Inteligência Artificial está estruturando sua proposta..."):
                 try:
-                    genai.configure(api_key=api_key_input)
+                    # Configura a API internamente com a sua chave oculta
+                    genai.configure(api_key=MINHA_API_KEY_PRIVADA)
                     model = genai.GenerativeModel('gemini-3.5-flash')
                     
                     prompt = f"""
@@ -123,7 +122,7 @@ else:
                     st.session_state['proposta'] = response.text
                     st.session_state['nome_cliente'] = nome_cliente
                 except Exception as e:
-                    st.error(f"Erro ao conectar com a API: {e}")
+                    st.error("⚠️ Ocorreu um pico de acessos no servidor. Por favor, aguarde 10 segundos e clique em Gerar novamente.")
 
     if 'proposta' in st.session_state:
         st.success("✨ Proposta gerada com sucesso!")
