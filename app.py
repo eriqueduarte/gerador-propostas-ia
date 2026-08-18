@@ -122,7 +122,8 @@ else:
                     st.session_state['proposta'] = response.text
                     st.session_state['nome_cliente'] = nome_cliente
                 except Exception as e:
-                    st.error("⚠️ Ocorreu um pico de acessos no servidor. Por favor, aguarde 10 segundos e clique em Gerar novamente.")
+                    st.error(f"⚠️ Erro técnico real: {e}")
+
 
     if 'proposta' in st.session_state:
         st.success("✨ Proposta gerada com sucesso!")
